@@ -1,25 +1,45 @@
-local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local UserInputService = game:GetService("UserInputService")
+local function getWorkspacePath()
+    local executorName = detectExecutor()
+    local workspacePath
 
-local function showNotification(title, text, duration)
-    StarterGui:SetCore("SendNotification", {
-        Title = title;
-        Text = text;
-        Duration = duration or 5;
-    })
+    if executorName == "Delta" then
+        workspacePath = "Delta/Workspace/"
+    elseif executorName == "KRNL" then
+        workspacePath = "KRNL/Workspace/"
+    elseif executorName == "Fluxus" then
+        workspacePath = "Fluxus/Workspace/"
+    elseif executorName == "Solara" then
+        workspacePath = "Solara/Workspace/"
+    elseif executorName == "Wave" then
+        workspacePath = "Wave/Workspace/"
+    elseif executorName == "Appleware" then
+        workspacePath = "Appleware/Workspace/"
+    elseif executorName == "Synapse X" then
+        workspacePath = "SynapseX/Workspace/"
+    else
+        workspacePath = "Unknown/Workspace/"
+    end
+
+    return workspacePath
 end
 
-local function checkDevice()
-    showNotification("Bloxy Client", "Bloxy Client has been successfully injected!", 5)
+local function createFolders()
+    local workspacePath = getWorkspacePath()
 
-    if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
-        showNotification("Bloxy Client", "Warning: Bloxy Client may not be fully supported on mobile devices.", 10)
+    local bloxyClientPath = workspacePath .. "BloxyClient"
+    local bloxyModsPath = workspacePath .. "BloxyMods"
+
+    if not pcall(function()
+        makefolder(bloxyClientPath)
+    end) then
+        showNotification("Error", "Failed to create BloxyClient folder.", 5)
+    end
+
+    if not pcall(function()
+        makefolder(bloxyModsPath)
+    end) then
+        showNotification("Error", "Failed to create BloxyMods folder.", 5)
     end
 end
 
-local function onInject()
-    checkDevice()
-end
-
-onInject()
+createFolders()
