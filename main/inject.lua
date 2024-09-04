@@ -1,45 +1,50 @@
-local function getWorkspacePath()
-    local executorName = detectExecutor()
-    local workspacePath
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local UserInputService = game:GetService("UserInputService")
 
-    if executorName == "Delta" then
-        workspacePath = "Delta/Workspace/"
-    elseif executorName == "KRNL" then
-        workspacePath = "KRNL/Workspace/"
-    elseif executorName == "Fluxus" then
-        workspacePath = "Fluxus/Workspace/"
-    elseif executorName == "Solara" then
-        workspacePath = "Solara/Workspace/"
-    elseif executorName == "Wave" then
-        workspacePath = "Wave/Workspace/"
-    elseif executorName == "Appleware" then
-        workspacePath = "Appleware/Workspace/"
-    elseif executorName == "Synapse X" then
-        workspacePath = "SynapseX/Workspace/"
+local function showNotification(title, text, duration)
+    StarterGui:SetCore("SendNotification", {
+        Title = title;
+        Text = text;
+        Duration = duration or 5;
+    })
+end
+
+local function detectExecutor()
+    if identifyexecutor then
+        return identifyexecutor()
+    elseif syn then
+        return "Synapse X"
+    elseif KRNL_LOADED then
+        return "KRNL"
+    elseif isfluxus then
+        return "Fluxus"
+    elseif getgenv().Delta then
+        return "Delta"
+    elseif getgenv().Solara then
+        return "Solara"
+    elseif getgenv().Wave then
+        return "Wave"
+    elseif getgenv().Appleware then
+        return "Appleware"
     else
-        workspacePath = "Unknown/Workspace/"
-    end
-
-    return workspacePath
-end
-
-local function createFolders()
-    local workspacePath = getWorkspacePath()
-
-    local bloxyClientPath = workspacePath .. "BloxyClient"
-    local bloxyModsPath = workspacePath .. "BloxyMods"
-
-    if not pcall(function()
-        makefolder(bloxyClientPath)
-    end) then
-        showNotification("Error", "Failed to create BloxyClient folder.", 5)
-    end
-
-    if not pcall(function()
-        makefolder(bloxyModsPath)
-    end) then
-        showNotification("Error", "Failed to create BloxyMods folder.", 5)
+        return "Unknown Executor"
     end
 end
 
-createFolders()
+local function checkDevice()
+    local executorName = detectExecutor()
+    
+    showNotification("Bloxy Client", "Loaded Bloxy Client for " .. executorName, 5)
+    showNotification("Bloxy Client", "Bloxy Client has been successfully injected using " .. executorName, 5)
+
+    if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+        showNotification("Bloxy Client", "Warning: Bloxy Client may not be fully supported on mobile devices.", 10)
+    end
+end
+
+local function onInject()
+    checkDevice()
+end
+
+onInject()
